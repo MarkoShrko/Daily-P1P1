@@ -3,7 +3,7 @@ import random
 import requests
 
 # CONFIGURATION
-CUBE_COBRA_ID = "vintagecube"  # Replace with your Cube Cobra ID slug
+CUBE_COBRA_ID = 6fa7c556-19c8-4efc-b34e-11bf188b990e  # Replace with your Cube Cobra ID slug
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
 def generate_and_send_p1p1():
