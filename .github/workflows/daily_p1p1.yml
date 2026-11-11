@@ -1,0 +1,27 @@
+name: Send Daily P1P1
+
+on:
+  schedule:
+    # Runs at 14:00 UTC (9:00 AM EST) every day
+    - cron: '0 14 * * *'
+  workflow_dispatch: # Allows you to manually click "Run workflow" to test anytime!
+
+jobs:
+  post-p1p1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run P1P1 script
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python p1p1.py
