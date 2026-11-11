@@ -78,7 +78,7 @@ def generate_and_send_p1p1():
     # 5. Build Discord Webhook Payload & File Attachment
     embed = {
         "title": "⚔️ Daily Pack 1, Pick 1 ⚔️",
-        "description": f"Here is today's P1P1! Review the visual grid below and reply with your pick and reasoning.",
+        "description": f"Here is today's P1P1!",
         "color": 15844367,
         "fields": [
             {"name": "Cards 1–8", "value": "\n".join(col1), "inline": True},
