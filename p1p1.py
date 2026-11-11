@@ -1,6 +1,7 @@
 import os
 import random
 import requests
+import json
 from io import BytesIO
 from PIL import Image
 
@@ -26,9 +27,10 @@ def generate_and_send_p1p1():
     # 2. Pick 15 random unique cards
     pack = random.sample(cards, 15)
 
-    # 3. Format text list with Scryfall links
+    # 3. Format text list with Scryfall links & download card arts
     col1, col2 = [], []
     card_images = []
+    scryfall_headers = {"User-Agent": "P1P1Bot/1.0", "Accept": "image/*"}
     
     for idx, card in enumerate(pack, 1):
         name = card.get("details", {}).get("name", "Unknown Card")
@@ -40,13 +42,18 @@ def generate_and_send_p1p1():
         else:
             col2.append(entry)
 
-        # Fetch image for grid compilation
+        # Fetch card image from Scryfall
         img_url = f"https://api.scryfall.com/cards/named?exact={requests.utils.quote(name)}&format=image&version=normal"
-        img_res = requests.get(img_url)
+        img_res = requests.get(img_url, headers=scryfall_headers)
         if img_res.status_code == 200:
-            card_images.append(Image.open(BytesIO(img_res.content)).convert("RGB"))
+            try:
+                img = Image.open(BytesIO(img_res.content)).convert("RGB")
+                card_images.append(img)
+            except Exception as e:
+                print(f"Failed to parse image for {name}: {e}")
 
     # 4. Create a 3x5 Image Montage Grid using Pillow
+    image_bytes = None
     if card_images:
         card_w, card_h = 200, 280
         resized_images = [img.resize((card_w, card_h)) for img in card_images]
@@ -67,8 +74,6 @@ def generate_and_send_p1p1():
         montage.save(buffer, format="JPEG", quality=85)
         buffer.seek(0)
         image_bytes = buffer.read()
-    else:
-        image_bytes = None
 
     # 5. Build Discord Webhook Payload & File Attachment
     embed = {
@@ -79,9 +84,11 @@ def generate_and_send_p1p1():
             {"name": "Cards 1–8", "value": "\n".join(col1), "inline": True},
             {"name": "Cards 9–15", "value": "\n".join(col2), "inline": True}
         ],
-        "image": {"url": "attachment://p1p1_grid.jpg"},
         "footer": {"text": "Click any card name above to open its Scryfall page!"}
     }
+
+    if image_bytes:
+        embed["image"] = {"url": "attachment://p1p1_grid.jpg"}
 
     payload = {
         "username": "P1P1 Bot",
@@ -89,9 +96,11 @@ def generate_and_send_p1p1():
     }
 
     files = {
-        "payload_json": (None, requests.compat.json.dumps(payload)),
-        "files[0]": ("p1p1_grid.jpg", image_bytes, "image/jpeg")
+        "payload_json": (None, json.dumps(payload), "application/json"),
     }
+    
+    if image_bytes:
+        files["file"] = ("p1p1_grid.jpg", image_bytes, "image/jpeg")
 
     post_res = requests.post(WEBHOOK_URL, files=files)
     if post_res.status_code in [200, 204]:
