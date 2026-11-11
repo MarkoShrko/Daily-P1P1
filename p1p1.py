@@ -77,7 +77,7 @@ def generate_and_send_p1p1():
 
     # 5. Build Discord Webhook Payload & File Attachment
     embed = {
-        "title": "⚔️ Daily Pack 1, Pick 1 ⚔️",
+        "title": "⚔️ Daily Cubert Pack 1, Pick 1 ⚔️",
         "description": f"Here is today's P1P1!",
         "color": 15844367,
         "fields": [
@@ -91,7 +91,7 @@ def generate_and_send_p1p1():
         embed["image"] = {"url": "attachment://p1p1_grid.jpg"}
 
     payload = {
-        "username": "P1P1 Bot",
+        "username": "Packdle Bot",
         "embeds": [embed]
     }
 
