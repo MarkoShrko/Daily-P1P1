@@ -2,7 +2,7 @@ name: Send Daily P1P1
 
 on:
   schedule:
-    # Runs at 12:05 PM Eastern Time every day
+    # Runs at 12:00 PM Eastern Time every day
     - cron: '0 12 * * *'
       timezone: 'America/New_York'
   workflow_dispatch: # Allows manual testing anytime!
