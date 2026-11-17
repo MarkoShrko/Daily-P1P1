@@ -2,8 +2,8 @@ name: Send Daily P1P1
 
 on:
   schedule:
-    # Runs at 12:00 PM Eastern Time every day
-    - cron: '0 9 * * *'
+      # Runs at 17:00 UTC
+    - cron: '0 17 * * *'
   workflow_dispatch: # Allows manual testing anytime!
 
 jobs:
